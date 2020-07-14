@@ -1,0 +1,23 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Krushed\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    Krushed\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    Krushed\Service\StreamElements:
+        arguments:
+            $channelId: '%env(STREAMELEMENTS_CHANNEL_ID)%'
+            $token: '%env(STREAMELEMENTS_JWT)%'
+
+    Krushed\Service\DiscordProvider:
+        arguments:
+            $token: '%env(DISCORD_BOT_TOKEN)%'
