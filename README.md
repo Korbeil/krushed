@@ -1,4 +1,6 @@
-# My project
+# Krushed
+
+A multi-platform bot (Discord/Twitch) for [@Birdly](https://twitter.com/BirdLyTV1).
 
 ## Running the application locally
 
