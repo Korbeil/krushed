@@ -81,6 +81,15 @@ def migrate(c):
 
 
 @task
+def cs_fix(c):
+    """
+    Will CS fix your code
+    """
+    with Builder(c):
+        docker_compose_run(c, 'vendor/bin/php-cs-fixer fix')
+
+
+@task
 def builder(c, user="app"):
     """
     Open a shell (bash) into a builder container

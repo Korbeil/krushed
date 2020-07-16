@@ -18,8 +18,8 @@ class StreamElements
     public function getCustomCommands(): array
     {
         $client = new CurlHttpClient();
-        $response = $client->request('GET', 'https://api.streamelements.com/kappa/v2/bot/commands/' . $this->channelId, [
-            'headers' => ['Authorization' => 'Bearer ' . $this->token]
+        $response = $client->request('GET', 'https://api.streamelements.com/kappa/v2/bot/commands/'.$this->channelId, [
+            'headers' => ['Authorization' => 'Bearer '.$this->token],
         ]);
 
         return $response->toArray();

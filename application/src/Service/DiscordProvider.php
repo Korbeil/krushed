@@ -27,7 +27,7 @@ class DiscordProvider
                 if ('$' !== $prefix) {
                     return;
                 }
-                $command = \mb_substr($message->content, 1, \mb_strlen($message->content) - 1);
+                $command = mb_substr($message->content, 1, mb_strlen($message->content) - 1);
                 $command = $this->commandRepository->findOneBy(['name' => $command]);
 
                 if ($command instanceof Command && $command->isEnabledOnDiscord()) {

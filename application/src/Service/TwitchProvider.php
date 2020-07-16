@@ -25,7 +25,8 @@ class TwitchProvider
         $client->connect();
 
         if (!$client->isConnected()) {
-            var_dump("It was not possible to connect.");
+            var_dump('It was not possible to connect.');
+
             return;
         }
 
@@ -34,8 +35,8 @@ class TwitchProvider
             var_dump($content);
 
             if ('' !== $content) {
-                $rows = \explode("\n", $content);
-                \array_pop($rows); // last element is useless
+                $rows = explode("\n", $content);
+                array_pop($rows); // last element is useless
 
                 foreach ($rows as $row) {
                     $matches = [];
@@ -44,7 +45,7 @@ class TwitchProvider
                         if ('$' !== $prefix) {
                             continue;
                         }
-                        $command = \mb_substr(trim($matches['message']), 1, \mb_strlen(trim($matches['message'])) - 1);
+                        $command = mb_substr(trim($matches['message']), 1, mb_strlen(trim($matches['message'])) - 1);
                         $command = $this->commandRepository->findOneBy(['name' => $command]);
 
                         if ($command instanceof Command && $command->isEnabledOnTwitch()) {
@@ -54,7 +55,7 @@ class TwitchProvider
                 }
             }
 
-            \usleep(200);
+            usleep(200);
         }
     }
 }

@@ -24,8 +24,8 @@ class TwitchClient
 
     public function connect()
     {
-        $this->socket = \socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if (\socket_connect($this->socket, static::HOST, static::PORT) === FALSE) {
+        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        if (false === socket_connect($this->socket, static::HOST, static::PORT)) {
             return null;
         }
 
@@ -36,17 +36,17 @@ class TwitchClient
 
     public function authenticate()
     {
-        $this->send(sprintf("PASS %s", $this->token));
+        $this->send(sprintf('PASS %s', $this->token));
     }
 
     public function setNick()
     {
-        $this->send(sprintf("NICK %s", 'bot'));
+        $this->send(sprintf('NICK %s', 'bot'));
     }
 
     public function joinChannel($channel)
     {
-        $this->send(sprintf("JOIN #%s", $channel));
+        $this->send(sprintf('JOIN #%s', $channel));
     }
 
     public function getLastError()
@@ -56,7 +56,7 @@ class TwitchClient
 
     public function isConnected()
     {
-        return is_resource($this->socket);
+        return \is_resource($this->socket);
     }
 
     public function read($size = 256)
@@ -65,7 +65,7 @@ class TwitchClient
             return null;
         }
 
-        return \socket_read($this->socket, $size);
+        return socket_read($this->socket, $size);
     }
 
     public function send($message)
@@ -74,18 +74,18 @@ class TwitchClient
             return null;
         }
 
-        return \socket_write($this->socket, $message . "\n");
+        return socket_write($this->socket, $message."\n");
     }
 
     public function message($message)
     {
-        return $this->send(sprintf("PRIVMSG #%s :%s", $this->channel, $message));
+        return $this->send(sprintf('PRIVMSG #%s :%s', $this->channel, $message));
     }
 
     public function close()
     {
         if ($this->isConnected()) {
-            \socket_close($this->socket);
+            socket_close($this->socket);
         }
     }
 }

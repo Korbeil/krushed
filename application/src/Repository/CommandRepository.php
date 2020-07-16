@@ -2,9 +2,9 @@
 
 namespace Krushed\Repository;
 
-use Krushed\Entity\Command;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Krushed\Entity\Command;
 
 /**
  * @method Command|null find($id, $lockMode = null, $lockVersion = null)

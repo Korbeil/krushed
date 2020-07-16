@@ -2,8 +2,8 @@
 
 namespace Krushed\Entity;
 
-use Krushed\Repository\CommandRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Krushed\Repository\CommandRepository;
 
 /**
  * @ORM\Entity(repositoryClass=CommandRepository::class)
