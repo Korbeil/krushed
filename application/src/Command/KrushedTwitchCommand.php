@@ -2,6 +2,7 @@
 
 namespace Krushed\Command;
 
+use Krushed\Service\TwitchProvider;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +12,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class KrushedTwitchCommand extends Command
 {
+    private TwitchProvider $provider;
+
     protected static $defaultName = 'krushed:twitch';
+
+    public function __construct(TwitchProvider $provider)
+    {
+        parent::__construct(null);
+        $this->provider = $provider;
+    }
 
     protected function configure()
     {
@@ -25,17 +34,10 @@ class KrushedTwitchCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
+        $io->success('Running Twitch handler.');
 
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $loop = $this->provider->create();
+        $loop->run();
 
         return 0;
     }

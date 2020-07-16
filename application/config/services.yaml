@@ -21,3 +21,8 @@ services:
     Krushed\Service\DiscordProvider:
         arguments:
             $token: '%env(DISCORD_BOT_TOKEN)%'
+
+    Krushed\Service\TwitchProvider:
+        arguments:
+            $token: '%env(TWITCH_TOKEN)%'
+            $channel: '%env(TWITCH_CHANNEL)%'
