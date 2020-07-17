@@ -27,22 +27,28 @@ class CommandRepository extends ServiceEntityRepository
 
     public function getOutputByCommandNameForDiscord(string $name): ?string
     {
-        return $this->getOutputByCommandName(sprintf('discord_%s', $name), Command::ENABLED_DISCORD);
+        return $this->getOutputByCommandName($name, 'discordEnabled');
     }
 
     public function getOutputByCommandNameForTwitch(string $name): ?string
     {
-        return $this->getOutputByCommandName(sprintf('discord_%s', $name), Command::ENABLED_TWITCH);
+        return $this->getOutputByCommandName($name, 'twitchEnabled');
     }
 
-    private function getOutputByCommandName(string $name, int $flag): ?string
+    private function getOutputByCommandName(string $name, string $enabledKey): ?string
     {
-        $cacheItem = $this->cache->getItem(sprintf('command_%s', $name));
+        $commandKey = sprintf('command_%s', $name);
+        $cacheItem = $this->cache->getItem($commandKey);
 
         if (!$cacheItem->isHit()) {
             $command = $this->findOneBy(['name' => $name]);
-            if ($command instanceof Command && $command->isEnabled($flag)) {
-                $cacheItem->set($command->getOutput());
+            if ($command instanceof Command) {
+                $cacheItem->set([
+                    'discordEnabled' => $command->isEnabledOnDiscord(),
+                    'twitchEnabled' => $command->isEnabledOnTwitch(),
+                    'cooldown' => $command->getCooldown(),
+                    'output' => $command->getOutput(),
+                ]);
             } else {
                 $cacheItem->set(null);
             }
@@ -50,6 +56,22 @@ class CommandRepository extends ServiceEntityRepository
             $this->cache->save($cacheItem);
         }
 
-        return $cacheItem->get();
+        $command = $cacheItem->get();
+        if (!$command[$enabledKey]) {
+            return null;
+        }
+
+        // command cooldown
+        $cooldownKey = sprintf('cooldown_%s', $commandKey);
+        $cooldownItem = $this->cache->getItem($cooldownKey);
+        if (!$cooldownItem->isHit()) {
+            $cooldownItem->set('cooldown');
+            $cooldownItem->expiresAfter($command['cooldown']);
+            $this->cache->save($cooldownItem);
+        } else {
+            return null;
+        }
+
+        return $command['output'];
     }
 }

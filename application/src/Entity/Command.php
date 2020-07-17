@@ -28,7 +28,7 @@ class Command
     private $output;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=false)
      */
     private $cooldown = 0;
 
@@ -69,7 +69,7 @@ class Command
         return $this;
     }
 
-    public function getCooldown(): ?int
+    public function getCooldown(): int
     {
         return $this->cooldown;
     }
