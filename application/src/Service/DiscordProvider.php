@@ -5,9 +5,14 @@ namespace Krushed\Service;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Krushed\Repository\CommandRepository;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 
-class DiscordProvider
+class DiscordProvider implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private string $token;
     private CommandRepository $commandRepository;
 
@@ -21,6 +26,7 @@ class DiscordProvider
     {
         $client = new Discord(['token' => $this->token]);
         $client->on('ready', function (Discord $discord) {
+            $this->logger->info('Discord provider connected.');
             $discord->on('message', function (Message $message, Discord $discord) {
                 $prefix = $message->content[0];
                 if ('$' !== $prefix) {

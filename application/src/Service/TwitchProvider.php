@@ -4,9 +4,13 @@ namespace Krushed\Service;
 
 use Krushed\Repository\CommandRepository;
 use Krushed\Service\Twitch\TwitchClient;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class TwitchProvider
+class TwitchProvider implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private string $token;
     private string $channel;
     private CommandRepository $commandRepository;
@@ -24,14 +28,14 @@ class TwitchProvider
         $client->connect();
 
         if (!$client->isConnected()) {
-            var_dump('It was not possible to connect.');
+            $this->logger->critical('It was not possible to connect.');
 
             return;
         }
+        $this->logger->info('Twitch provider connected.');
 
         while (true) {
             $content = $client->read(512);
-            var_dump($content);
 
             if ('' !== $content) {
                 $rows = explode("\n", $content);
