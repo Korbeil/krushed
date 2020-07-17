@@ -91,6 +91,11 @@ class Command
         return $this->enabled & self::ENABLED_TWITCH;
     }
 
+    public function isEnabled(int $flag): bool
+    {
+        return $this->enabled & $flag;
+    }
+
     public function setEnabled(int $enabled): self
     {
         $this->enabled = $enabled;

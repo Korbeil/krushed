@@ -4,7 +4,6 @@ namespace Krushed\Service;
 
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
-use Krushed\Entity\Command;
 use Krushed\Repository\CommandRepository;
 
 class DiscordProvider
@@ -28,10 +27,10 @@ class DiscordProvider
                     return;
                 }
                 $command = mb_substr($message->content, 1, mb_strlen($message->content) - 1);
-                $command = $this->commandRepository->findOneBy(['name' => $command]);
+                $commandOutput = $this->commandRepository->getOutputByCommandNameForDiscord($command);
 
-                if ($command instanceof Command && $command->isEnabledOnDiscord()) {
-                    $message->channel->sendMessage($command->getOutput());
+                if (\is_string($commandOutput)) {
+                    $message->channel->sendMessage($commandOutput);
                 }
             });
         });

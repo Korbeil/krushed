@@ -2,6 +2,8 @@ version: '3.7'
 
 volumes:
     postgres-data: {}
+    redis-data: {}
+    redis-insight-data: {}
 
 services:
     router:
@@ -33,3 +35,17 @@ services:
             - POSTGRES_PASSWORD=password
         volumes:
             - postgres-data:/var/lib/postgresql/data
+
+    redis:
+        image: redis:5
+        volumes:
+            - "redis-data:/data"
+
+    redis-insight:
+        image: redislabs/redisinsight
+        volumes:
+            - "redis-insight-data:/db"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-redis.rule=Host(`redis.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"

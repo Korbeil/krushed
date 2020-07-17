@@ -25,6 +25,7 @@ RUN apt-get update \
         php${PHP_VERSION}-pgsql \
         php${PHP_VERSION}-xml \
         php${PHP_VERSION}-zip \
+        php${PHP_VERSION}-redis \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 

@@ -5,6 +5,7 @@ namespace Krushed\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Krushed\Entity\Command;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 /**
  * @method Command|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,37 +15,41 @@ use Krushed\Entity\Command;
  */
 class CommandRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private const CACHE_TTL = 60 * 60 * 24; // 1 day cache
+
+    private AdapterInterface $cache;
+
+    public function __construct(ManagerRegistry $registry, AdapterInterface $adapter)
     {
         parent::__construct($registry, Command::class);
+        $this->cache = $adapter;
     }
 
-    // /**
-    //  * @return Command[] Returns an array of Command objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getOutputByCommandNameForDiscord(string $name): ?string
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this->getOutputByCommandName(sprintf('discord_%s', $name), Command::ENABLED_DISCORD);
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Command
+    public function getOutputByCommandNameForTwitch(string $name): ?string
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $this->getOutputByCommandName(sprintf('discord_%s', $name), Command::ENABLED_TWITCH);
     }
-    */
+
+    private function getOutputByCommandName(string $name, int $flag): ?string
+    {
+        $cacheItem = $this->cache->getItem(sprintf('command_%s', $name));
+
+        if (!$cacheItem->isHit()) {
+            $command = $this->findOneBy(['name' => $name]);
+            if ($command instanceof Command && $command->isEnabled($flag)) {
+                $cacheItem->set($command->getOutput());
+            } else {
+                $cacheItem->set(null);
+            }
+            $cacheItem->expiresAfter(self::CACHE_TTL);
+            $this->cache->save($cacheItem);
+        }
+
+        return $cacheItem->get();
+    }
 }

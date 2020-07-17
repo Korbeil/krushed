@@ -2,7 +2,6 @@
 
 namespace Krushed\Service;
 
-use Krushed\Entity\Command;
 use Krushed\Repository\CommandRepository;
 use Krushed\Service\Twitch\TwitchClient;
 
@@ -46,10 +45,10 @@ class TwitchProvider
                             continue;
                         }
                         $command = mb_substr(trim($matches['message']), 1, mb_strlen(trim($matches['message'])) - 1);
-                        $command = $this->commandRepository->findOneBy(['name' => $command]);
+                        $commandOutput = $this->commandRepository->getOutputByCommandNameForTwitch($command);
 
-                        if ($command instanceof Command && $command->isEnabledOnTwitch()) {
-                            $client->message($command->getOutput());
+                        if (\is_string($commandOutput)) {
+                            $client->message($commandOutput);
                         }
                     }
                 }
