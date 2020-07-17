@@ -4,6 +4,7 @@ namespace Krushed\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Krushed\Repository\CommandRepository;
+use Krushed\Service\Output\DefaultOutputHandler;
 
 /**
  * @ORM\Entity(repositoryClass=CommandRepository::class)
@@ -15,22 +16,27 @@ class Command
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $output;
+    private ?string $output;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    private string $handler = DefaultOutputHandler::class;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private $cooldown = 0;
+    private int $cooldown = 0;
 
     public const ENABLED_DISCORD = 0b0001; // 1
     public const ENABLED_TWITCH = 0b0010;  // 2
@@ -65,6 +71,18 @@ class Command
     public function setOutput(?string $output): self
     {
         $this->output = $output;
+
+        return $this;
+    }
+
+    public function getHandler(): string
+    {
+        return $this->handler;
+    }
+
+    public function setHandler(string $handler): self
+    {
+        $this->handler = $handler;
 
         return $this;
     }

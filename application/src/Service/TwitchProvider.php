@@ -2,8 +2,9 @@
 
 namespace Krushed\Service;
 
-use Krushed\Repository\CommandRepository;
+use Krushed\Service\Message\TwitchMessageEvent;
 use Krushed\Service\Twitch\TwitchClient;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -13,13 +14,13 @@ class TwitchProvider implements LoggerAwareInterface
 
     private string $token;
     private string $channel;
-    private CommandRepository $commandRepository;
+    private EventDispatcherInterface $dispatcher;
 
-    public function __construct(string $token, string $channel, CommandRepository $commandRepository)
+    public function __construct(string $token, string $channel, EventDispatcherInterface $dispatcher)
     {
         $this->token = $token;
         $this->channel = $channel;
-        $this->commandRepository = $commandRepository;
+        $this->dispatcher = $dispatcher;
     }
 
     public function create(): void
@@ -44,16 +45,14 @@ class TwitchProvider implements LoggerAwareInterface
                 foreach ($rows as $row) {
                     $matches = [];
                     if (preg_match('#^\:(?<nickname>[a-z0-9]+)\!(?:[a-z0-9]+)\@(?:[a-z0-9]+)\.tmi\.twitch\.tv\ PRIVMSG \#(?<channel>[a-z]+)\ \:(?<message>.*)$#', $row, $matches)) {
-                        $prefix = $matches['message'][0];
-                        if ('$' !== $prefix) {
-                            continue;
-                        }
-                        $command = mb_substr(trim($matches['message']), 1, mb_strlen(trim($matches['message'])) - 1);
-                        $commandOutput = $this->commandRepository->getOutputByCommandNameForTwitch($command);
-
-                        if (\is_string($commandOutput)) {
-                            $client->message($commandOutput);
-                        }
+                        $this->dispatcher->dispatch(new TwitchMessageEvent(
+                            $matches['nickname'],
+                            $matches['channel'],
+                            trim($matches['message']),
+                            function (string $output) use ($client) {
+                                $client->message($output);
+                            }
+                        ));
                     }
                 }
             }

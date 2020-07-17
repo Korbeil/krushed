@@ -25,17 +25,17 @@ class CommandRepository extends ServiceEntityRepository
         $this->cache = $adapter;
     }
 
-    public function getOutputByCommandNameForDiscord(string $name): ?string
+    public function getOutputByCommandNameForDiscord(string $name): ?array
     {
         return $this->getOutputByCommandName($name, 'discordEnabled');
     }
 
-    public function getOutputByCommandNameForTwitch(string $name): ?string
+    public function getOutputByCommandNameForTwitch(string $name): ?array
     {
         return $this->getOutputByCommandName($name, 'twitchEnabled');
     }
 
-    private function getOutputByCommandName(string $name, string $enabledKey): ?string
+    private function getOutputByCommandName(string $name, string $enabledKey): ?array
     {
         $commandKey = sprintf('command_%s', $name);
         $cacheItem = $this->cache->getItem($commandKey);
@@ -48,6 +48,7 @@ class CommandRepository extends ServiceEntityRepository
                     'twitchEnabled' => $command->isEnabledOnTwitch(),
                     'cooldown' => $command->getCooldown(),
                     'output' => $command->getOutput(),
+                    'handler' => $command->getHandler(),
                 ]);
             } else {
                 $cacheItem->set(null);
@@ -57,12 +58,12 @@ class CommandRepository extends ServiceEntityRepository
         }
 
         $command = $cacheItem->get();
-        if (!$command[$enabledKey]) {
+        if (null === $command || !$command[$enabledKey]) {
             return null;
         }
 
         // command cooldown
-        $cooldownKey = sprintf('cooldown_%s', $commandKey);
+        $cooldownKey = sprintf('cooldown_%s_%s', $enabledKey, $commandKey);
         $cooldownItem = $this->cache->getItem($cooldownKey);
         if (!$cooldownItem->isHit()) {
             $cooldownItem->set('cooldown');
@@ -72,6 +73,9 @@ class CommandRepository extends ServiceEntityRepository
             return null;
         }
 
-        return $command['output'];
+        return [
+            'handler' => $command['handler'],
+            'output' => $command['output'],
+        ];
     }
 }

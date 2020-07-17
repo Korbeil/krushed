@@ -26,3 +26,12 @@ services:
         arguments:
             $token: '%env(TWITCH_TOKEN)%'
             $channel: '%env(TWITCH_CHANNEL)%'
+
+    _instanceof:
+        Krushed\Service\Output\OutputHandler:
+            tags: ['krushed.output_handler']
+
+    Krushed\Service\Message\MessageSubscriber:
+        arguments:
+            $prefix: '%env(BOT_PREFIX)%'
+            $outputHandlers: !tagged_locator 'krushed.output_handler'

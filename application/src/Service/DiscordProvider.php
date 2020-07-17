@@ -4,22 +4,22 @@ namespace Krushed\Service;
 
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
-use Krushed\Repository\CommandRepository;
+use Krushed\Service\Message\DiscordMessageEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LoggerInterface;
 
 class DiscordProvider implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
     private string $token;
-    private CommandRepository $commandRepository;
+    private EventDispatcherInterface $dispatcher;
 
-    public function __construct(string $token, CommandRepository $commandRepository)
+    public function __construct(string $token, EventDispatcherInterface $dispatcher)
     {
         $this->token = $token;
-        $this->commandRepository = $commandRepository;
+        $this->dispatcher = $dispatcher;
     }
 
     public function create(): Discord
@@ -28,16 +28,14 @@ class DiscordProvider implements LoggerAwareInterface
         $client->on('ready', function (Discord $discord) {
             $this->logger->info('Discord provider connected.');
             $discord->on('message', function (Message $message, Discord $discord) {
-                $prefix = $message->content[0];
-                if ('$' !== $prefix) {
-                    return;
-                }
-                $command = mb_substr($message->content, 1, mb_strlen($message->content) - 1);
-                $commandOutput = $this->commandRepository->getOutputByCommandNameForDiscord($command);
-
-                if (\is_string($commandOutput)) {
-                    $message->channel->sendMessage($commandOutput);
-                }
+                $this->dispatcher->dispatch(new DiscordMessageEvent(
+                    $message->author,
+                    $message->channel_id,
+                    $message->content,
+                    function (string $output) use ($message) {
+                        $message->channel->sendMessage($output);
+                    }
+                ));
             });
         });
 

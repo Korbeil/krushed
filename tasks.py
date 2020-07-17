@@ -81,6 +81,16 @@ def migrate(c):
 
 
 @task
+def clear_database(c):
+    """
+    Migrate database schema
+    """
+    with Builder(c):
+        docker_compose_run(c, 'php bin/console doctrine:database:drop --force --if-exists')
+    migrate(c)
+
+
+@task
 def cs_fix(c):
     """
     Will CS fix your code
