@@ -2,9 +2,9 @@
 
 namespace Krushed\Repository;
 
-use Krushed\Entity\Streamer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Krushed\Entity\Streamer;
 
 /**
  * @method Streamer|null find($id, $lockMode = null, $lockVersion = null)

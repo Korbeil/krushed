@@ -2,8 +2,8 @@
 
 namespace Krushed\Entity;
 
-use Krushed\Repository\StreamerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Krushed\Repository\StreamerRepository;
 
 /**
  * @ORM\Entity(repositoryClass=StreamerRepository::class)

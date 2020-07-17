@@ -46,7 +46,7 @@ class TwitchController extends AbstractController
      */
     public function authorize(Request $request, Twitch $twitch): Response
     {
-        $state = \md5(\random_bytes(10));
+        $state = md5(random_bytes(10));
         $request->getSession()->set('oauth_state', $state);
         $request->getSession()->set('oauth_user', $request->attributes->get('user'));
 

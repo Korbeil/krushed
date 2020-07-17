@@ -36,8 +36,7 @@ class KrushedTwitchCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->success('Running Twitch handler.');
 
-        $loop = $this->provider->create();
-        $loop->run();
+        $this->provider->create();
 
         return 0;
     }

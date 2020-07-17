@@ -31,7 +31,7 @@ class MessageSubscriber implements EventSubscriberInterface
         $repositoryMethod = sprintf('getOutputByCommandNameFor%s', ucfirst($event->getProvider()));
         $command = $this->commandRepository->$repositoryMethod($command);
 
-        if (is_array($command)) {
+        if (\is_array($command)) {
             /** @var OutputHandler $outputHandler */
             $outputHandler = $this->outputHandlers->get($command['handler']);
             $event->reply($outputHandler->render($command['output']));
