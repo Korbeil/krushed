@@ -2,10 +2,12 @@
 
 namespace Krushed\Service\Output;
 
+use Krushed\Service\Message\Message;
+
 class DefaultOutputHandler implements OutputHandler
 {
-    public function render(string $output): string
+    public function render(Message $message): string
     {
-        return $output;
+        return $message->message;
     }
 }

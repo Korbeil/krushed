@@ -22,19 +22,22 @@ class MessageSubscriber implements EventSubscriberInterface
 
     public function onMessageEvent(MessageEvent $event)
     {
-        $prefix = $event->getMessage()[0];
+        $message = $event->getMessage();
+
+        $prefix = $message->message[0];
         if ($this->prefix !== $prefix) {
             return;
         }
-        $command = mb_substr($event->getMessage(), 1, mb_strlen($event->getMessage()) - 1);
+        $command = mb_substr($message->message, 1, mb_strlen($message->message) - 1);
 
         $repositoryMethod = sprintf('getOutputByCommandNameFor%s', ucfirst($event->getProvider()));
         $command = $this->commandRepository->$repositoryMethod($command);
 
         if (\is_array($command)) {
+            $message->message = $command['output'];
             /** @var OutputHandler $outputHandler */
             $outputHandler = $this->outputHandlers->get($command['handler']);
-            $event->reply($outputHandler->render($command['output']));
+            $event->reply($outputHandler->render($message));
         }
     }
 

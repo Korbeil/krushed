@@ -2,7 +2,9 @@
 
 namespace Krushed\Service\Output;
 
+use Krushed\Service\Message\Message;
+
 interface OutputHandler
 {
-    public function render(string $output): string;
+    public function render(Message $message): string;
 }

@@ -2,6 +2,7 @@
 
 namespace Krushed\Service;
 
+use Krushed\Service\Message\Message;
 use Krushed\Service\Message\TwitchMessageEvent;
 use Krushed\Service\Twitch\TwitchClient;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -46,9 +47,7 @@ class TwitchProvider implements LoggerAwareInterface
                     $matches = [];
                     if (preg_match('#^\:(?<nickname>[a-z0-9]+)\!(?:[a-z0-9]+)\@(?:[a-z0-9]+)\.tmi\.twitch\.tv\ PRIVMSG \#(?<channel>[a-z]+)\ \:(?<message>.*)$#', $row, $matches)) {
                         $this->dispatcher->dispatch(new TwitchMessageEvent(
-                            $matches['nickname'],
-                            $matches['channel'],
-                            trim($matches['message']),
+                            new Message($matches['nickname'], $matches['channel'], trim($matches['message'])),
                             function (string $output) use ($client) {
                                 $client->message($output);
                             }

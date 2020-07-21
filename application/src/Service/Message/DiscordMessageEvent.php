@@ -4,8 +4,8 @@ namespace Krushed\Service\Message;
 
 class DiscordMessageEvent extends MessageEvent
 {
-    public function __construct(string $nickname, string $channel, string $message, callable $reply)
+    public function __construct(Message $message, callable $reply)
     {
-        parent::__construct($nickname, $channel, $message, 'discord', $reply);
+        parent::__construct($message, 'discord', $reply);
     }
 }
