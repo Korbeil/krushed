@@ -48,7 +48,7 @@ class TwitchController extends AbstractController
     {
         $state = md5(random_bytes(10));
         $request->getSession()->set('oauth_state', $state);
-        $request->getSession()->set('oauth_user', $request->attributes->get('user'));
+        $request->getSession()->set('oauth_user', mb_strtolower($request->attributes->get('user')));
 
         return $this->redirect($twitch->getAuthorizeUrl($state));
     }
