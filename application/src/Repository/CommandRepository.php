@@ -63,15 +63,15 @@ class CommandRepository extends ServiceEntityRepository
         }
 
         // command cooldown
-        $cooldownKey = sprintf('cooldown_%s_%s', $enabledKey, $commandKey);
-        $cooldownItem = $this->cache->getItem($cooldownKey);
-        if (!$cooldownItem->isHit()) {
-            $cooldownItem->set('cooldown');
-            $cooldownItem->expiresAfter($command['cooldown']);
-            $this->cache->save($cooldownItem);
-        } else {
-            return null;
-        }
+//        $cooldownKey = sprintf('cooldown_%s_%s', $enabledKey, $commandKey);
+//        $cooldownItem = $this->cache->getItem($cooldownKey);
+//        if (!$cooldownItem->isHit()) {
+//            $cooldownItem->set('cooldown');
+//            $cooldownItem->expiresAfter($command['cooldown']);
+//            $this->cache->save($cooldownItem);
+//        } else {
+//            return null;
+//        }
 
         return [
             'handler' => $command['handler'],

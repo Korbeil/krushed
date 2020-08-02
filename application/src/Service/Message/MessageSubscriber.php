@@ -23,12 +23,13 @@ class MessageSubscriber implements EventSubscriberInterface
     public function onMessageEvent(MessageEvent $event)
     {
         $message = $event->getMessage();
+        $firstWord = $message->getFirstWord();
 
-        $prefix = $message->message[0];
+        $prefix = $firstWord[0];
         if ($this->prefix !== $prefix) {
             return;
         }
-        $command = mb_substr($message->message, 1, mb_strlen($message->message) - 1);
+        $command = mb_substr($firstWord, 1, mb_strlen($firstWord) - 1);
 
         $repositoryMethod = sprintf('getOutputByCommandNameFor%s', ucfirst($event->getProvider()));
         $command = $this->commandRepository->$repositoryMethod($command);

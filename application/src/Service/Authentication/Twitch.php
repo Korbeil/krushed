@@ -23,15 +23,12 @@ class Twitch
         'channel_subscriptions',
     ];
 
-    public function __construct(string $clientId, string $clientSecret, UrlGeneratorInterface $urlGenerator)
+    public function __construct(string $clientId, string $clientSecret, TwitchApi $twitchClient, UrlGeneratorInterface $urlGenerator)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->urlGenerator = $urlGenerator;
-        $this->client = new TwitchApi([
-            'client_id' => $clientId,
-            'client_secret' => $clientSecret,
-        ]);
+        $this->client = $twitchClient;
     }
 
     public function getAuthorizeUrl(string $state): string

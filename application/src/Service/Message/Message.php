@@ -19,4 +19,23 @@ class Message
         $this->channel = $channel;
         $this->originalMessage = $this->message = $message;
     }
+
+    public function getFirstWord(): string
+    {
+        $parts = explode(' ', $this->originalMessage);
+
+        return $parts[0];
+    }
+
+    public function getParameter(): ?string
+    {
+        $parts = explode(' ', $this->originalMessage);
+
+        return \array_key_exists(1, $parts) ? $parts[1] : null;
+    }
+
+    public function uniqueCommandIdentifier(): string
+    {
+        return sha1($this->getFirstWord());
+    }
 }

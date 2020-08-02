@@ -36,6 +36,12 @@ services:
             $prefix: '%env(BOT_PREFIX)%'
             $outputHandlers: !tagged_locator 'krushed.output_handler'
 
+    TwitchApi\TwitchApi:
+        arguments:
+            $options:
+                client_id: '%env(TWITCH_API_CLIENT_ID)%'
+                client_secret: '%env(TWITCH_API_CLIENT_SECRET)%'
+
     Krushed\Service\Authentication\Twitch:
         arguments:
             $clientId: '%env(TWITCH_API_CLIENT_ID)%'
